@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}À propos{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="text-center mb-5">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                À propos d'EduBurundi
+            </h1>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="fas fa-bullseye text-primary me-2"></i>
+                        Notre Mission
+                    </h4>
+                    <p class="card-text">
+                        EduBurundi est une plateforme éducative dédiée aux élèves du post-fondamental au Burundi. 
+                        Notre mission est de rendre l'éducation de qualité accessible à tous les élèves, 
+                        quel que soit leur lieu de résidence ou leurs moyens financiers.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="fas fa-eye text-success me-2"></i>
+                        Notre Vision
+                    </h4>
+                    <p class="card-text">
+                        Nous croyons que chaque élève burundais mérite d'avoir accès à des ressources 
+                        pédagogiques de qualité pour réussir ses études. EduBurundi vise à devenir 
+                        la référence en matière d'apprentissage en ligne au Burundi.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="fas fa-heart text-danger me-2"></i>
+                        Nos Valeurs
+                    </h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <strong>Accessibilité</strong> - L'éducation pour tous
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <strong>Qualité</strong> - Des contenus rigoureux et adaptés
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <strong>Communauté</strong> - L'entraide entre élèves et enseignants
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <strong>Innovation</strong> - Les meilleures technologies au service de l'éducation
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="fas fa-users text-info me-2"></i>
+                        Notre Équipe
+                    </h4>
+                    <p class="card-text">
+                        EduBurundi est développé par une équipe passionnée d'éducateurs et de développeurs 
+                        qui croient au pouvoir de la technologie pour transformer l'éducation au Burundi.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="{{ url_for('main.contact') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-envelope me-2"></i>Nous contacter
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

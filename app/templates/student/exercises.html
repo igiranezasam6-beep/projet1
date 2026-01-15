@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Exercices{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">
+        <i class="fas fa-book-open me-2"></i>Tous les exercices
+    </h2>
+    
+    <!-- Filters -->
+    <div class="filter-section">
+        <form method="GET" action="{{ url_for('student.exercises') }}">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Matière</label>
+                    <select class="form-select" name="subject" onchange="this.form.submit()">
+                        <option value="">Toutes les matières</option>
+                        {% for subject_code, subject_name in subjects %}
+                            <option value="{{ subject_code }}" 
+                                    {% if current_subject == subject_code %}selected{% endif %}>
+                                {{ subject_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Niveau</label>
+                    <select class="form-select" name="level" onchange="this.form.submit()">
+                        <option value="">Tous les niveaux</option>
+                        {% for level_code, level_name in class_levels %}
+                            <option value="{{ level_code }}" 
+                                    {% if current_level == level_code %}selected{% endif %}>
+                                {{ level_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Difficulté</label>
+                    <select class="form-select" name="difficulty" onchange="this.form.submit()">
+                        <option value="">Toutes</option>
+                        <option value="facile" {% if current_difficulty == 'facile' %}selected{% endif %}>Facile</option>
+                        <option value="moyen" {% if current_difficulty == 'moyen' %}selected{% endif %}>Moyen</option>
+                        <option value="difficile" {% if current_difficulty == 'difficile' %}selected{% endif %}>Difficile</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Recherche</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" 
+                               value="{{ search }}" placeholder="Rechercher...">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Exercises Grid -->
+    {% if exercises.items %}
+        <div class="row g-4">
+            {% for exercise in exercises.items %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card exercise-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-primary">{{ exercise.get_subject_name() }}</span>
+                            <span class="badge bg-secondary">{{ exercise.get_level_name() }}</span>
+                        </div>
+                        <h5 class="card-title">{{ exercise.title }}</h5>
+                        <p class="card-text">
+                            {{ exercise.description[:100] if exercise.description else 'Aucune description' }}...
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge badge-difficulty-{{ exercise.difficulty }}">
+                                    {{ exercise.difficulty|capitalize }}
+                                </span>
+                                {% if exercise.has_correction %}
+                                    <span class="badge bg-success ms-1">
+                                        <i class="fas fa-check"></i> Corrigé
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">
+                                <i class="fas fa-eye me-1"></i>{{ exercise.view_count }}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ url_for('student.view_exercise', id=exercise.id) }}" 
+                           class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-eye me-2"></i>Voir l'exercice
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if exercises.pages > 1 %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if exercises.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('student.exercises', page=exercises.prev_num, subject=current_subject, level=current_level, difficulty=current_difficulty, search=search) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for page in exercises.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if page %}
+                        <li class="page-item {% if page == exercises.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('student.exercises', page=page, subject=current_subject, level=current_level, difficulty=current_difficulty, search=search) }}">
+                                {{ page }}
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if exercises.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('student.exercises', page=exercises.next_num, subject=current_subject, level=current_level, difficulty=current_difficulty, search=search) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+    {% else %}
+        <div class="card">
+            <div class="card-body">
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h5>Aucun exercice trouvé</h5>
+                    <p class="text-muted">Essayez de modifier vos critères de recherche.</p>
+                    <a href="{{ url_for('student.exercises') }}" class="btn btn-primary">
+                        <i class="fas fa-redo me-2"></i>Réinitialiser les filtres
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h1 class="display-5 fw-bold mb-4">
+                    Apprenez mieux avec EduBurundi
+                </h1>
+                <p class="lead mb-4">
+                    La plateforme éducative dédiée aux élèves du post-fondamental au Burundi. 
+                    Accédez à des exercices, corrigés et ressources pédagogiques de qualité.
+                </p>
+                {% if not current_user.is_authenticated %}
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>S'inscrire gratuitement
+                        </a>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Connexion
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="d-flex gap-3">
+                        {% if current_user.is_teacher() %}
+                            <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>Mon tableau de bord
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('student.exercises') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-book-open me-2"></i>Voir les exercices
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="https://img.icons8.com/external-flaticons-lineal-color-flat-icons/256/external-online-education-online-education-flaticons-lineal-color-flat-icons-4.png" 
+                     alt="EduBurundi" class="img-fluid" style="max-width: 350px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 col-6">
+                <div class="text-center">
+                    <div class="stat-icon text-primary">
+                        <i class="fas fa-book fa-3x"></i>
+                    </div>
+                    <h3 class="fw-bold mt-3">{{ total_exercises }}+</h3>
+                    <p class="text-muted">Exercices</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="text-center">
+                    <div class="stat-icon text-success">
+                        <i class="fas fa-chalkboard-teacher fa-3x"></i>
+                    </div>
+                    <h3 class="fw-bold mt-3">{{ subjects|length }}</h3>
+                    <p class="text-muted">Matières</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="text-center">
+                    <div class="stat-icon text-warning">
+                        <i class="fas fa-graduation-cap fa-3x"></i>
+                    </div>
+                    <h3 class="fw-bold mt-3">{{ class_levels|length }}</h3>
+                    <p class="text-muted">Niveaux</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="text-center">
+                    <div class="stat-icon text-info">
+                        <i class="fas fa-users fa-3x"></i>
+                    </div>
+                    <h3 class="fw-bold mt-3">100%</h3>
+                    <p class="text-muted">Gratuit</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Subjects Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="fas fa-books me-2 text-primary"></i>
+            Explorez par matière
+        </h2>
+        <div class="row g-4">
+            {% for subject_code, subject_name in subjects[:8] %}
+            <div class="col-lg-3 col-md-4 col-6">
+                <a href="{% if current_user.is_authenticated %}{{ url_for('student.subject_exercises', subject=subject_code) }}{% else %}{{ url_for('auth.login') }}{% endif %}" 
+                   class="text-decoration-none">
+                    <div class="card subject-card h-100">
+                        <div class="card-body">
+                            {% if subject_code == 'mathematiques' %}
+                                <i class="fas fa-calculator"></i>
+                            {% elif subject_code == 'physique' %}
+                                <i class="fas fa-atom"></i>
+                            {% elif subject_code == 'chimie' %}
+                                <i class="fas fa-flask"></i>
+                            {% elif subject_code == 'biologie' %}
+                                <i class="fas fa-dna"></i>
+                            {% elif subject_code == 'francais' %}
+                                <i class="fas fa-book"></i>
+                            {% elif subject_code == 'anglais' %}
+                                <i class="fas fa-language"></i>
+                            {% elif subject_code == 'histoire' %}
+                                <i class="fas fa-landmark"></i>
+                            {% elif subject_code == 'geographie' %}
+                                <i class="fas fa-globe-africa"></i>
+                            {% else %}
+                                <i class="fas fa-book-open"></i>
+                            {% endif %}
+                            <h6 class="card-title mt-3 text-dark">{{ subject_name }}</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Latest Exercises Section -->
+{% if latest_exercises %}
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-clock me-2 text-primary"></i>
+                Derniers exercices
+            </h2>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('student.exercises') }}" class="btn btn-outline-primary">
+                    Voir tout <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            {% endif %}
+        </div>
+        <div class="row g-4">
+            {% for exercise in latest_exercises %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card exercise-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-primary">{{ exercise.get_subject_name() }}</span>
+                            <span class="badge bg-secondary">{{ exercise.get_level_name() }}</span>
+                        </div>
+                        <h5 class="card-title">{{ exercise.title }}</h5>
+                        <p class="card-text">
+                            {{ exercise.description[:100] if exercise.description else 'Aucune description' }}...
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <small class="text-muted">
+                                <i class="fas fa-eye me-1"></i>{{ exercise.view_count }} vues
+                            </small>
+                            {% if exercise.has_correction %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>Corrigé
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('student.view_exercise', id=exercise.id) }}" class="btn btn-primary btn-sm w-100">
+                                <i class="fas fa-eye me-1"></i>Voir l'exercice
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm w-100">
+                                <i class="fas fa-sign-in-alt me-1"></i>Connectez-vous pour voir
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="fas fa-star me-2 text-warning"></i>
+            Pourquoi choisir EduBurundi ?
+        </h2>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-book-open fa-2x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Exercices de qualité</h5>
+                        <p class="card-text text-muted">
+                            Des exercices créés par des enseignants qualifiés, adaptés au programme burundais.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        </div>
+                        <h5 class="card-title">Corrigés détaillés</h5>
+                        <p class="card-text text-muted">
+                            Accédez aux corrigés pour comprendre vos erreurs et progresser rapidement.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-comments fa-2x text-info"></i>
+                        </div>
+                        <h5 class="card-title">Communauté active</h5>
+                        <p class="card-text text-muted">
+                            Posez vos questions et échangez avec d'autres élèves et enseignants sur le forum.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-video fa-2x text-warning"></i>
+                        </div>
+                        <h5 class="card-title">Vidéos explicatives</h5>
+                        <p class="card-text text-muted">
+                            Des vidéos pédagogiques pour mieux comprendre les concepts difficiles.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="rounded-circle bg-danger bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-robot fa-2x text-danger"></i>
+                        </div>
+                        <h5 class="card-title">Assistant intelligent</h5>
+                        <p class="card-text text-muted">
+                            Un chatbot pour vous aider à naviguer et trouver rapidement ce que vous cherchez.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="rounded-circle bg-secondary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-mobile-alt fa-2x text-secondary"></i>
+                        </div>
+                        <h5 class="card-title">Accessible partout</h5>
+                        <p class="card-text text-muted">
+                            Accédez à la plateforme depuis votre téléphone, tablette ou ordinateur.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Class Levels Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="fas fa-layer-group me-2 text-primary"></i>
+            Tous les niveaux du post-fondamental
+        </h2>
+        <div class="row justify-content-center g-3">
+            {% for level_code, level_name in class_levels %}
+            <div class="col-lg-2 col-md-3 col-4">
+                <a href="{% if current_user.is_authenticated %}{{ url_for('student.exercises') }}?level={{ level_code }}{% else %}{{ url_for('auth.login') }}{% endif %}" 
+                   class="text-decoration-none">
+                    <div class="card text-center h-100">
+                        <div class="card-body py-4">
+                            <i class="fas fa-graduation-cap fa-2x text-primary mb-2"></i>
+                            <h6 class="card-title mb-0">{{ level_name }}</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+{% if not current_user.is_authenticated %}
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Prêt à améliorer vos résultats scolaires ?</h2>
+        <p class="lead mb-4">
+            Rejoignez des milliers d'élèves burundais qui utilisent EduBurundi pour réussir.
+        </p>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg">
+            <i class="fas fa-rocket me-2"></i>Commencer maintenant - C'est gratuit !
+        </a>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

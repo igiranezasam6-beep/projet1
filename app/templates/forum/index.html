@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Forum{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <h2 class="mb-4">
+                <i class="fas fa-comments me-2"></i>Forum de discussion
+            </h2>
+            
+            <p class="text-muted mb-4">
+                Bienvenue sur le forum EduBurundi ! Posez vos questions, partagez vos connaissances 
+                et entraidez-vous entre élèves et enseignants.
+            </p>
+            
+            <!-- Search -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('forum.search') }}">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="q" placeholder="Rechercher dans le forum...">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search me-2"></i>Rechercher
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Categories -->
+            <div class="row g-4">
+                {% for category in categories %}
+                <div class="col-md-6">
+                    <div class="card forum-category-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start">
+                                <div class="me-3">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="{{ category.icon }} text-primary"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title mb-1">
+                                        <a href="{{ url_for('forum.category', slug=category.slug) }}" 
+                                           class="text-decoration-none text-dark">
+                                            {{ category.name }}
+                                        </a>
+                                    </h5>
+                                    <p class="card-text text-muted small mb-2">
+                                        {{ category.description }}
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-comments me-1"></i>{{ category.post_count() }} sujets
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Recent Posts -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Sujets récents
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_posts %}
+                        {% for post in recent_posts %}
+                            <div class="mb-3 pb-3 border-bottom">
+                                <a href="{{ url_for('forum.view_post', id=post.id) }}" 
+                                   class="text-decoration-none">
+                                    <strong class="d-block text-dark">{{ post.title[:40] }}...</strong>
+                                </a>
+                                <small class="text-muted">
+                                    par {{ post.author.get_full_name() }} • 
+                                    {{ post.created_at.strftime('%d/%m/%Y') }}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center mb-0">Aucun sujet récent</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Forum Rules -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Règles du forum
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Restez respectueux envers les autres
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Posez des questions claires
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Évitez les doublons de sujets
+                        </li>
+                        <li>
+                            <i class="fas fa-check text-success me-2"></i>
+                            Partagez vos connaissances
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
