@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exercise.title }} · EduBurundi{% endblock %}
+
+{% block content %}
+  <div class="bg-white border rounded-3 p-4">
+    <div class="small text-secondary">
+      {{ exercise.subject }} · {{ exercise.school_level }}
+      {% if exercise.theme %}· {{ exercise.theme }}{% endif %}
+      · Vues: {{ exercise.view_count }}
+    </div>
+    <h1 class="h4 fw-semibold mt-1 mb-2">{{ exercise.title }}</h1>
+    {% if exercise.description %}
+      <p class="mb-3">{{ exercise.description }}</p>
+    {% endif %}
+
+    <div class="d-flex gap-2 flex-wrap mb-3">
+      <a class="btn btn-primary" href="{{ exercise.exercise_file.url }}" download>Télécharger l’exercice</a>
+      {% if exercise.correction_file %}
+        <a class="btn btn-outline-primary" href="{{ exercise.correction_file.url }}" download>Télécharger le corrigé</a>
+      {% endif %}
+      {% if exercise.video_url %}
+        <a class="btn btn-outline-secondary" href="{{ exercise.video_url }}" target="_blank" rel="noopener noreferrer">
+          Voir la vidéo
+        </a>
+      {% endif %}
+    </div>
+
+    {% if exercise.correction_text %}
+      <div class="border rounded-3 p-3 bg-light">
+        <h2 class="h6 fw-semibold mb-2">Corrigé (texte)</h2>
+        <pre class="mb-0" style="white-space: pre-wrap">{{ exercise.correction_text }}</pre>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="mt-4">
+    <h2 class="h5 fw-semibold">Questions</h2>
+
+    <div class="bg-white border rounded-3 p-3 mb-3">
+      {% if user.is_authenticated %}
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ comment_form.non_field_errors }}
+          <div class="mb-2">
+            <label class="form-label" for="{{ comment_form.content.id_for_label }}">Poser une question</label>
+            {{ comment_form.content }}
+            <div class="text-danger small">{{ comment_form.content.errors }}</div>
+          </div>
+          <button class="btn btn-primary" type="submit">Publier</button>
+        </form>
+      {% else %}
+        <div class="alert alert-info mb-0">
+          <a href="{% url 'login' %}">Connectez-vous</a> pour poser une question.
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="list-group">
+      {% for c in exercise.comments.all %}
+        <div class="list-group-item">
+          <div class="small text-secondary">
+            {% if c.author %}{{ c.author.username }}{% else %}Utilisateur supprimé{% endif %}
+            · {{ c.created_at|date:"d/m/Y H:i" }}
+          </div>
+          <div class="mt-1">{{ c.content }}</div>
+        </div>
+      {% empty %}
+        <div class="alert alert-light border mb-0">Aucune question pour le moment.</div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
+

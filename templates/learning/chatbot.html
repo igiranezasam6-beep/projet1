@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Chatbot · EduBurundi{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="bg-white border rounded-3 p-4">
+        <h1 class="h4 fw-semibold mb-1">Chatbot d’assistance</h1>
+        <p class="text-secondary mb-3">
+          Posez une question sur l’utilisation du site (inscription, exercices, corrigés, forum…).
+        </p>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.school_level.id_for_label }}">Niveau (optionnel)</label>
+            {{ form.school_level }}
+            <div class="text-danger small">{{ form.school_level.errors }}</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.question.id_for_label }}">Question</label>
+            {{ form.question }}
+            <div class="text-danger small">{{ form.question.errors }}</div>
+          </div>
+          <button class="btn btn-primary" type="submit">Demander</button>
+        </form>
+
+        {% if answer %}
+          <hr />
+          <div>
+            <div class="fw-semibold mb-1">Réponse</div>
+            <div>{{ answer }}</div>
+          </div>
+        {% endif %}
+
+        {% if suggestions %}
+          <hr />
+          <div>
+            <div class="fw-semibold mb-2">Suggestions d’exercices</div>
+            <ul class="mb-0">
+              {% for sid, stitle in suggestions %}
+                <li><a href="{% url 'exercise_detail' sid %}">{{ stitle }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

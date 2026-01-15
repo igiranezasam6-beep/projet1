@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Exercices · EduBurundi{% endblock %}
+
+{% block content %}
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+    <h1 class="h4 fw-semibold mb-0">Exercices</h1>
+    {% if can_upload %}
+      <a class="btn btn-primary" href="{% url 'exercise_create' %}">Publier un exercice</a>
+    {% endif %}
+  </div>
+
+  <div class="bg-white border rounded-3 p-3 mb-3">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Matière</label>
+        <input class="form-control" name="subject" value="{{ filters.subject }}" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Niveau</label>
+        <input class="form-control" name="level" value="{{ filters.level }}" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Thème</label>
+        <input class="form-control" name="theme" value="{{ filters.theme }}" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Recherche</label>
+        <input class="form-control" name="q" value="{{ filters.q }}" />
+      </div>
+      <div class="col-12 d-flex gap-2">
+        <button class="btn btn-outline-primary" type="submit">Filtrer</button>
+        <a class="btn btn-outline-secondary" href="{% url 'exercise_list' %}">Réinitialiser</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="row g-3">
+    {% for e in exercises %}
+      <div class="col-lg-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="small text-secondary">
+              {{ e.subject }} · {{ e.school_level }}
+              {% if e.theme %}· {{ e.theme }}{% endif %}
+            </div>
+            <h2 class="h6 mt-1 mb-2">{{ e.title }}</h2>
+            <div class="small text-secondary">Vues: {{ e.view_count }}</div>
+            <a class="stretched-link" href="{% url 'exercise_detail' e.id %}"></a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-info mb-0">Aucun exercice ne correspond à vos filtres.</div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
