@@ -711,6 +711,12 @@ function renderForumThreads() {
       replyForm.className = "forum-reply-form";
       replyForm.dataset.threadId = thread.id;
 
+      const replyAuthorInput = document.createElement("input");
+      replyAuthorInput.name = "replyAuthor";
+      replyAuthorInput.type = "text";
+      replyAuthorInput.placeholder = t("forumNamePlaceholder");
+      replyAuthorInput.required = true;
+
       const replyInput = document.createElement("input");
       replyInput.name = "reply";
       replyInput.type = "text";
@@ -722,6 +728,7 @@ function renderForumThreads() {
       replyButton.className = "secondary-btn";
       replyButton.textContent = t("forumReplyButton");
 
+      replyForm.appendChild(replyAuthorInput);
       replyForm.appendChild(replyInput);
       replyForm.appendChild(replyButton);
 
@@ -854,15 +861,18 @@ function handleForumReplySubmit(event) {
   if (!form) return;
   event.preventDefault();
   const threadId = form.dataset.threadId;
+  const replyAuthor = sanitize(
+    form.querySelector("input[name='replyAuthor']").value
+  );
   const replyText = sanitize(form.querySelector("input[name='reply']").value);
-  if (!replyText) return;
+  if (!replyAuthor || !replyText) return;
 
   const thread = state.forumThreads.find((item) => item.id === threadId);
   if (!thread) return;
 
   thread.replies.push({
     id: `reply-${Date.now()}`,
-    author: "Utilisateur",
+    author: replyAuthor,
     message: replyText,
     createdAt: new Date().toISOString(),
   });
