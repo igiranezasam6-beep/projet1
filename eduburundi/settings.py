@@ -20,11 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-=rf*^-ikfu8#^^@5d(@c4r7yych_%$nufq1s(l70gk^vdfaiu='
 SECRET_KEY = 'django-insecure-q$z$!*!5@=!2a74-3p@k@knjtpb9&3n_i!4e1mhi9-+32huss5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 ALLOWED_HOSTS = []
 
 
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'learning',
     'core',
     'accounts',
     'resources',
@@ -120,6 +123,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
+LANGUAGES = [
+    ('fr', 'Français'),
+    ('en', 'English'),
+    ('rn', 'Kirundi'),
+]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = '/media/'

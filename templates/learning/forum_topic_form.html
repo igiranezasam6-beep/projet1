@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Nouveau sujet · EduBurundi{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="bg-white border rounded-3 p-4">
+        <h1 class="h4 fw-semibold mb-3">Nouveau sujet</h1>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              <div class="text-danger small">{{ field.errors }}</div>
+            </div>
+          {% endfor %}
+          <button class="btn btn-primary" type="submit">Créer</button>
+          <a class="btn btn-outline-secondary" href="{% url 'forum_list' %}">Annuler</a>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
