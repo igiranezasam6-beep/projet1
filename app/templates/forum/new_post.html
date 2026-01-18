@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Nouveau sujet - {{ category.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('forum.index') }}">Forum</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('forum.category', slug=category.slug) }}">{{ category.name }}</a></li>
+                    <li class="breadcrumb-item active">Nouveau sujet</li>
+                </ol>
+            </nav>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Créer un nouveau sujet
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('forum.new_post', slug=category.slug) }}">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Titre du sujet *</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   placeholder="Entrez un titre clair et descriptif" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Contenu *</label>
+                            <textarea class="form-control" id="content" name="content" rows="8" 
+                                      placeholder="Décrivez votre question ou sujet en détail..." required></textarea>
+                            <small class="text-muted">
+                                Conseil: Soyez précis et donnez tous les détails nécessaires pour obtenir une bonne réponse.
+                            </small>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Catégorie:</strong> {{ category.name }}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('forum.category', slug=category.slug) }}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Publier le sujet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

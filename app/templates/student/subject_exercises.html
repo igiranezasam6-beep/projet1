@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}{{ subject_name }} - Exercices{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>
+                <i class="fas fa-book me-2"></i>{{ subject_name }}
+            </h2>
+            <p class="text-muted mb-0">Tous les exercices de {{ subject_name }}</p>
+        </div>
+        <a href="{{ url_for('student.exercises') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Toutes les matières
+        </a>
+    </div>
+    
+    <!-- Level Filter -->
+    <div class="filter-section mb-4">
+        <form method="GET" action="{{ url_for('student.subject_exercises', subject=subject) }}">
+            <div class="row align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Filtrer par niveau</label>
+                    <select class="form-select" name="level" onchange="this.form.submit()">
+                        <option value="">Tous les niveaux</option>
+                        {% for level_code, level_name in class_levels %}
+                            <option value="{{ level_code }}" 
+                                    {% if current_level == level_code %}selected{% endif %}>
+                                {{ level_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Exercises -->
+    {% if exercises.items %}
+        <div class="row g-4">
+            {% for exercise in exercises.items %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card exercise-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-secondary">{{ exercise.get_level_name() }}</span>
+                            <span class="badge badge-difficulty-{{ exercise.difficulty }}">
+                                {{ exercise.difficulty|capitalize }}
+                            </span>
+                        </div>
+                        <h5 class="card-title">{{ exercise.title }}</h5>
+                        <p class="card-text">
+                            {{ exercise.description[:100] if exercise.description else 'Aucune description' }}...
+                        </p>
+                        {% if exercise.theme %}
+                            <span class="badge bg-info mb-2">{{ exercise.theme }}</span>
+                        {% endif %}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-eye me-1"></i>{{ exercise.view_count }}
+                            </small>
+                            {% if exercise.has_correction %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check"></i> Corrigé
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ url_for('student.view_exercise', id=exercise.id) }}" 
+                           class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-eye me-2"></i>Voir l'exercice
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if exercises.pages > 1 %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if exercises.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('student.subject_exercises', subject=subject, page=exercises.prev_num, level=current_level) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for page in exercises.iter_pages() %}
+                    {% if page %}
+                        <li class="page-item {% if page == exercises.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('student.subject_exercises', subject=subject, page=page, level=current_level) }}">
+                                {{ page }}
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if exercises.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('student.subject_exercises', subject=subject, page=exercises.next_num, level=current_level) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+    {% else %}
+        <div class="card">
+            <div class="card-body">
+                <div class="empty-state">
+                    <i class="fas fa-book-open"></i>
+                    <h5>Aucun exercice</h5>
+                    <p class="text-muted">Il n'y a pas encore d'exercices pour {{ subject_name }}{% if current_level %} au niveau sélectionné{% endif %}.</p>
+                    {% if current_level %}
+                        <a href="{{ url_for('student.subject_exercises', subject=subject) }}" class="btn btn-primary">
+                            Voir tous les niveaux
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

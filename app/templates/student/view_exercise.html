@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exercise.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('student.exercises') }}">Exercices</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('student.subject_exercises', subject=exercise.subject) }}">{{ exercise.get_subject_name() }}</a></li>
+                    <li class="breadcrumb-item active">{{ exercise.title[:30] }}...</li>
+                </ol>
+            </nav>
+            
+            <!-- Exercise Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h4 class="mb-2">{{ exercise.title }}</h4>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-primary">{{ exercise.get_subject_name() }}</span>
+                                <span class="badge bg-secondary">{{ exercise.get_level_name() }}</span>
+                                <span class="badge badge-difficulty-{{ exercise.difficulty }}">
+                                    {{ exercise.difficulty|capitalize }}
+                                </span>
+                                {% if exercise.theme %}
+                                    <span class="badge bg-info">{{ exercise.theme }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if exercise.has_correction %}
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-check me-1"></i>Corrigé disponible
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if exercise.description %}
+                        <p class="text-muted mb-4">{{ exercise.description }}</p>
+                    {% endif %}
+                    
+                    <!-- Exercise Content -->
+                    {% if exercise.content %}
+                        <div class="bg-light p-4 rounded mb-4">
+                            <h5 class="mb-3"><i class="fas fa-file-alt me-2"></i>Énoncé</h5>
+                            <div class="exercise-content">
+                                {{ exercise.content|safe }}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Exercise File -->
+                    {% if exercise.file_path %}
+                        <div class="alert alert-info">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-file-pdf me-2"></i>
+                                    Fichier de l'exercice disponible
+                                </div>
+                                <a href="{{ url_for('student.download_exercise', id=exercise.id) }}" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-download me-2"></i>Télécharger
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Video -->
+                    {% if exercise.video_url %}
+                        <div class="mb-4">
+                            <h5 class="mb-3"><i class="fab fa-youtube me-2 text-danger"></i>Vidéo explicative</h5>
+                            <div class="video-container">
+                                <iframe src="{{ exercise.video_url.replace('watch?v=', 'embed/').split('&')[0] }}" 
+                                        frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Correction Section -->
+            {% if exercise.has_correction %}
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>Corrigé
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if exercise.correction_content %}
+                        <div class="bg-light p-4 rounded mb-3">
+                            {{ exercise.correction_content|safe }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if exercise.correction_file_path %}
+                        <div class="alert alert-success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-file-pdf me-2"></i>
+                                    Fichier du corrigé disponible
+                                </div>
+                                <a href="{{ url_for('student.download_correction', id=exercise.id) }}" 
+                                   class="btn btn-success btn-sm">
+                                    <i class="fas fa-download me-2"></i>Télécharger
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Questions Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Questions ({{ questions|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Ask Question Form -->
+                    <form method="POST" action="{{ url_for('student.ask_question', id=exercise.id) }}" class="mb-4">
+                        <div class="mb-3">
+                            <label for="question" class="form-label">Poser une question</label>
+                            <textarea class="form-control" id="question" name="content" rows="3" 
+                                      placeholder="Écrivez votre question ici..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>Envoyer
+                        </button>
+                    </form>
+                    
+                    <hr>
+                    
+                    <!-- Questions List -->
+                    {% if questions %}
+                        {% for question in questions %}
+                            <div class="question-item">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <strong>{{ question.author.get_full_name() }}</strong>
+                                    <small class="text-muted">
+                                        {{ question.created_at.strftime('%d/%m/%Y à %H:%M') }}
+                                    </small>
+                                </div>
+                                <p class="mb-2">{{ question.content }}</p>
+                                
+                                {% if question.is_resolved %}
+                                    <span class="badge bg-success mb-2">
+                                        <i class="fas fa-check me-1"></i>Résolue
+                                    </span>
+                                {% endif %}
+                                
+                                <!-- Answers -->
+                                {% for answer in question.answers %}
+                                    <div class="answer-item {% if answer.author.is_teacher() %}teacher-answer{% endif %}">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <strong>
+                                                {{ answer.author.get_full_name() }}
+                                                {% if answer.author.is_teacher() %}
+                                                    <span class="badge bg-success ms-1">Enseignant</span>
+                                                {% endif %}
+                                            </strong>
+                                            <small class="text-muted">
+                                                {{ answer.created_at.strftime('%d/%m/%Y') }}
+                                            </small>
+                                        </div>
+                                        <p class="mb-0">{{ answer.content }}</p>
+                                    </div>
+                                {% endfor %}
+                                
+                                <!-- Answer Form -->
+                                {% if not question.is_resolved %}
+                                    <form method="POST" action="{{ url_for('student.answer_question', id=question.id) }}" 
+                                          class="mt-2 ms-4">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control form-control-sm" name="content" 
+                                                   placeholder="Répondre à cette question...">
+                                            <button class="btn btn-outline-primary btn-sm" type="submit">
+                                                <i class="fas fa-reply"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">
+                            Aucune question pour cet exercice. Soyez le premier à poser une question !
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Exercise Info -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Informations
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-user me-2 text-muted"></i>
+                            <strong>Auteur:</strong> {{ exercise.author.get_full_name() }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-calendar me-2 text-muted"></i>
+                            <strong>Publié:</strong> {{ exercise.created_at.strftime('%d/%m/%Y') }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-eye me-2 text-muted"></i>
+                            <strong>Vues:</strong> {{ exercise.view_count }}
+                        </li>
+                        <li>
+                            <i class="fas fa-download me-2 text-muted"></i>
+                            <strong>Téléchargements:</strong> {{ exercise.download_count }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if exercise.file_path %}
+                            <a href="{{ url_for('student.download_exercise', id=exercise.id) }}" 
+                               class="btn btn-primary">
+                                <i class="fas fa-download me-2"></i>Télécharger l'exercice
+                            </a>
+                        {% endif %}
+                        {% if exercise.correction_file_path %}
+                            <a href="{{ url_for('student.download_correction', id=exercise.id) }}" 
+                               class="btn btn-success">
+                                <i class="fas fa-download me-2"></i>Télécharger le corrigé
+                            </a>
+                        {% endif %}
+                        <a href="{{ url_for('student.subject_exercises', subject=exercise.subject) }}" 
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-book me-2"></i>Autres exercices de {{ exercise.get_subject_name() }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Share -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-share-alt me-2"></i>Partager
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-outline-primary flex-fill">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-info flex-fill">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-success flex-fill">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

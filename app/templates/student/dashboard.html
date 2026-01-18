@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Mon Espace{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <h2>
+            <i class="fas fa-user-graduate me-2"></i>
+            Bienvenue, {{ current_user.get_full_name() }}
+        </h2>
+        <p class="mb-0 opacity-75">
+            {% if current_user.class_level %}
+                {{ current_user.class_level|replace('eme', 'ème') }} année
+            {% else %}
+                Commencez à explorer les exercices
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ url_for('student.exercises') }}" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Parcourir les exercices
+                        </a>
+                        <a href="{{ url_for('forum.index') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-comments me-2"></i>Forum
+                        </a>
+                        <a href="{{ url_for('student.my_questions') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-question-circle me-2"></i>Mes questions
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recommended Exercises -->
+            {% if recommended %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star me-2 text-warning"></i>Recommandés pour vous
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for exercise in recommended %}
+                        <div class="col-md-6">
+                            <div class="card exercise-card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="badge bg-primary">{{ exercise.get_subject_name() }}</span>
+                                        <span class="badge badge-difficulty-{{ exercise.difficulty }}">
+                                            {{ exercise.difficulty|capitalize }}
+                                        </span>
+                                    </div>
+                                    <h6 class="card-title">{{ exercise.title }}</h6>
+                                    <p class="card-text small">
+                                        {{ exercise.description[:80] if exercise.description else '' }}...
+                                    </p>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <a href="{{ url_for('student.view_exercise', id=exercise.id) }}" 
+                                       class="btn btn-sm btn-outline-primary w-100">
+                                        <i class="fas fa-eye me-1"></i>Voir
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Latest Exercises -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Derniers exercices
+                    </h5>
+                    <a href="{{ url_for('student.exercises') }}" class="btn btn-sm btn-outline-primary">
+                        Voir tout
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if latest %}
+                        <div class="row g-3">
+                            {% for exercise in latest %}
+                            <div class="col-md-6">
+                                <div class="card exercise-card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="badge bg-primary">{{ exercise.get_subject_name() }}</span>
+                                            <span class="badge bg-secondary">{{ exercise.get_level_name() }}</span>
+                                        </div>
+                                        <h6 class="card-title">{{ exercise.title }}</h6>
+                                        <div class="d-flex justify-content-between align-items-center mt-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-eye me-1"></i>{{ exercise.view_count }}
+                                            </small>
+                                            {% if exercise.has_correction %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Corrigé
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <a href="{{ url_for('student.view_exercise', id=exercise.id) }}" 
+                                           class="btn btn-sm btn-outline-primary w-100">
+                                            <i class="fas fa-eye me-1"></i>Voir
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <p class="text-muted">Aucun exercice disponible pour le moment.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Subjects -->
+            <div class="sidebar mb-4">
+                <h6 class="sidebar-title">
+                    <i class="fas fa-book me-2"></i>Matières
+                </h6>
+                <ul class="sidebar-list">
+                    {% for subject_code, subject_name in subjects %}
+                    <li>
+                        <a href="{{ url_for('student.subject_exercises', subject=subject_code) }}">
+                            <i class="fas fa-chevron-right"></i>
+                            {{ subject_name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <!-- My Questions -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Mes questions récentes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if my_questions %}
+                        {% for question in my_questions %}
+                            <div class="mb-3 pb-2 border-bottom">
+                                <p class="mb-1 small">{{ question.content[:60] }}...</p>
+                                <small class="text-muted">
+                                    {{ question.created_at.strftime('%d/%m/%Y') }}
+                                    {% if question.is_resolved %}
+                                        <span class="badge bg-success ms-1">Résolue</span>
+                                    {% else %}
+                                        <span class="badge bg-warning ms-1">En attente</span>
+                                    {% endif %}
+                                </small>
+                            </div>
+                        {% endfor %}
+                        <a href="{{ url_for('student.my_questions') }}" class="btn btn-outline-primary btn-sm w-100">
+                            Voir toutes mes questions
+                        </a>
+                    {% else %}
+                        <p class="text-muted text-center small mb-0">
+                            Vous n'avez pas encore posé de questions.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

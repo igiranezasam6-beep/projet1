@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EduBurundi{% endblock %} - Plateforme d'exercices interactifs</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+                <i class="fas fa-graduation-cap me-2"></i>
+                <span class="fw-bold">EduBurundi</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">
+                            <i class="fas fa-home me-1"></i> Accueil
+                        </a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_teacher() %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('teacher.dashboard') }}">
+                                    <i class="fas fa-chalkboard-teacher me-1"></i> Mon Espace
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('student.dashboard') }}">
+                                    <i class="fas fa-book-reader me-1"></i> Mon Espace
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('student.exercises') }}">
+                                    <i class="fas fa-tasks me-1"></i> Exercices
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('forum.index') }}">
+                                <i class="fas fa-comments me-1"></i> Forum
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('chatbot.index') }}">
+                                <i class="fas fa-robot me-1"></i> Assistant
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <!-- Language Selector -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="langDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-globe me-1"></i>
+                            {% if session.get('language') == 'rn' %}
+                                Kirundi
+                            {% elif session.get('language') == 'en' %}
+                                English
+                            {% else %}
+                                Français
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('main.set_language', lang='fr') }}">
+                                <span class="fi fi-fr me-2"></span>Français
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.set_language', lang='rn') }}">
+                                <span class="fi fi-bi me-2"></span>Kirundi
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.set_language', lang='en') }}">
+                                <span class="fi fi-gb me-2"></span>English
+                            </a></li>
+                        </ul>
+                    </li>
+                    
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>
+                                {{ current_user.get_full_name() }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <span class="dropdown-item-text text-muted small">
+                                        {% if current_user.is_teacher() %}
+                                            <i class="fas fa-chalkboard-teacher me-1"></i> Enseignant
+                                        {% else %}
+                                            <i class="fas fa-user-graduate me-1"></i> Élève
+                                        {% endif %}
+                                    </span>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}">
+                                    <i class="fas fa-user-cog me-2"></i>Mon Profil
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Connexion
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-light btn-sm ms-2" href="{{ url_for('auth.register') }}">
+                                <i class="fas fa-user-plus me-1"></i> Inscription
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3">
+                        <i class="fas fa-graduation-cap me-2"></i>EduBurundi
+                    </h5>
+                    <p class="text-muted">
+                        Plateforme éducative dédiée aux élèves du post-fondamental au Burundi. 
+                        Accédez à des exercices, corrigés et ressources pédagogiques de qualité.
+                    </p>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h6 class="mb-3">Navigation</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('main.index') }}" class="text-muted text-decoration-none">Accueil</a></li>
+                        <li><a href="{{ url_for('main.about') }}" class="text-muted text-decoration-none">À propos</a></li>
+                        <li><a href="{{ url_for('main.contact') }}" class="text-muted text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h6 class="mb-3">Ressources</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('forum.index') }}" class="text-muted text-decoration-none">Forum</a></li>
+                        <li><a href="{{ url_for('chatbot.index') }}" class="text-muted text-decoration-none">Assistant</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4 mb-4">
+                    <h6 class="mb-3">Contact</h6>
+                    <ul class="list-unstyled text-muted">
+                        <li><i class="fas fa-map-marker-alt me-2"></i>Bujumbura, Burundi</li>
+                        <li><i class="fas fa-envelope me-2"></i>contact@eduburundi.bi</li>
+                        <li><i class="fas fa-phone me-2"></i>+257 22 XX XX XX</li>
+                    </ul>
+                    <div class="mt-3">
+                        <a href="#" class="text-muted me-3"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-muted me-3"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-muted me-3"><i class="fab fa-youtube fa-lg"></i></a>
+                        <a href="#" class="text-muted"><i class="fab fa-whatsapp fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 text-muted small">
+                        &copy; 2024 EduBurundi. Tous droits réservés.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="mb-0 text-muted small">
+                        Fait avec <i class="fas fa-heart text-danger"></i> pour l'éducation au Burundi
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Chatbot Widget (for logged in users) -->
+    {% if current_user.is_authenticated %}
+    <div id="chatbot-widget" class="chatbot-widget">
+        <button id="chatbot-toggle" class="chatbot-toggle btn btn-primary rounded-circle shadow-lg">
+            <i class="fas fa-robot fa-lg"></i>
+        </button>
+        <div id="chatbot-window" class="chatbot-window card shadow-lg" style="display: none;">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-robot me-2"></i>Assistant EduBurundi</span>
+                <button class="btn btn-sm btn-light" onclick="toggleChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="card-body chatbot-messages" id="chatbot-messages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        Bonjour {{ current_user.first_name or current_user.username }} ! Je suis l'assistant EduBurundi. Comment puis-je vous aider ?
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <form id="chatbot-form" class="d-flex">
+                    <input type="text" id="chatbot-input" class="form-control me-2" placeholder="Posez votre question...">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

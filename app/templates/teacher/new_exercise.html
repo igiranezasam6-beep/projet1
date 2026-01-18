@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Nouvel Exercice{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Créer un nouvel exercice
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('teacher.new_exercise') }}" enctype="multipart/form-data">
+                        <!-- Basic Info -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label for="title" class="form-label">Titre de l'exercice *</label>
+                                <input type="text" class="form-control" id="title" name="title" 
+                                       placeholder="Ex: Exercices sur les équations du second degré" required>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="subject" class="form-label">Matière *</label>
+                                <select class="form-select" id="subject" name="subject" required>
+                                    <option value="">Sélectionnez une matière</option>
+                                    {% for subject_code, subject_name in subjects %}
+                                        <option value="{{ subject_code }}">{{ subject_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="class_level" class="form-label">Niveau *</label>
+                                <select class="form-select" id="class_level" name="class_level" required>
+                                    <option value="">Sélectionnez un niveau</option>
+                                    {% for level_code, level_name in class_levels %}
+                                        <option value="{{ level_code }}">{{ level_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="difficulty" class="form-label">Difficulté</label>
+                                <select class="form-select" id="difficulty" name="difficulty">
+                                    <option value="facile">Facile</option>
+                                    <option value="moyen" selected>Moyen</option>
+                                    <option value="difficile">Difficile</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="theme" class="form-label">Thème / Chapitre</label>
+                                <input type="text" class="form-control" id="theme" name="theme" 
+                                       placeholder="Ex: Algèbre, Mécanique, Grammaire...">
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                          placeholder="Décrivez brièvement cet exercice..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- Exercise Content -->
+                        <h5 class="mb-3">
+                            <i class="fas fa-file-alt me-2"></i>Contenu de l'exercice
+                        </h5>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label for="content" class="form-label">Énoncé (texte)</label>
+                                <textarea class="form-control" id="content" name="content" rows="6"
+                                          placeholder="Entrez l'énoncé de l'exercice ici..."></textarea>
+                                <small class="text-muted">Vous pouvez entrer le texte de l'exercice directement ici.</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="exercise_file" class="form-label">
+                                    <i class="fas fa-upload me-1"></i>Ou téléverser un fichier
+                                </label>
+                                <input type="file" class="form-control" id="exercise_file" name="exercise_file"
+                                       accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg">
+                                <small class="text-muted">Formats acceptés: PDF, Word, TXT, Images</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="video_url" class="form-label">
+                                    <i class="fab fa-youtube me-1"></i>Lien vidéo (YouTube)
+                                </label>
+                                <input type="url" class="form-control" id="video_url" name="video_url"
+                                       placeholder="https://www.youtube.com/watch?v=...">
+                                <small class="text-muted">Ajoutez une vidéo explicative (optionnel)</small>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- Correction -->
+                        <h5 class="mb-3">
+                            <i class="fas fa-check-circle me-2"></i>Corrigé (optionnel)
+                        </h5>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label for="correction_content" class="form-label">Corrigé (texte)</label>
+                                <textarea class="form-control" id="correction_content" name="correction_content" rows="6"
+                                          placeholder="Entrez le corrigé de l'exercice ici..."></textarea>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="correction_file" class="form-label">
+                                    <i class="fas fa-upload me-1"></i>Ou téléverser le fichier de correction
+                                </label>
+                                <input type="file" class="form-control" id="correction_file" name="correction_file"
+                                       accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg">
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Publier l'exercice
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

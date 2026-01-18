@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="container">
+        <div class="auth-card card" style="max-width: 600px;">
+            <div class="card-body">
+                <div class="auth-header">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>Créer un compte</h3>
+                    <p class="text-muted">Rejoignez la communauté EduBurundi</p>
+                </div>
+                
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    <!-- Role Selection -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Je suis :</label>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="role" id="role-student" 
+                                       value="student" checked>
+                                <label class="btn btn-outline-primary w-100 py-3" for="role-student">
+                                    <i class="fas fa-user-graduate fa-2x d-block mb-2"></i>
+                                    Élève
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="role" id="role-teacher" 
+                                       value="teacher">
+                                <label class="btn btn-outline-primary w-100 py-3" for="role-teacher">
+                                    <i class="fas fa-chalkboard-teacher fa-2x d-block mb-2"></i>
+                                    Enseignant
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label">Prénom</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" 
+                                   placeholder="Jean" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="last_name" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" 
+                                   placeholder="Nkurunziza" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 mt-3">
+                        <label for="username" class="form-label">Nom d'utilisateur</label>
+                        <div class="input-group">
+                            <span class="input-group-text">@</span>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   placeholder="jeannkurunziza" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Adresse email</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               placeholder="votre@email.com" required>
+                    </div>
+                    
+                    <!-- Class Level (for students) -->
+                    <div class="mb-3" id="class-level-group">
+                        <label for="class_level" class="form-label">Niveau scolaire</label>
+                        <select class="form-select" id="class_level" name="class_level">
+                            <option value="">Sélectionnez votre niveau</option>
+                            {% for level_code, level_name in class_levels %}
+                                <option value="{{ level_code }}">{{ level_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="school" class="form-label">École / Établissement</label>
+                        <input type="text" class="form-control" id="school" name="school" 
+                               placeholder="Nom de votre école">
+                    </div>
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="password" class="form-label">Mot de passe</label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="••••••••" required minlength="6">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="confirm_password" class="form-label">Confirmer le mot de passe</label>
+                            <input type="password" class="form-control" id="confirm_password" 
+                                   name="confirm_password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" required>
+                        <label class="form-check-label" for="terms">
+                            J'accepte les <a href="#">conditions d'utilisation</a>
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Créer mon compte
+                        </button>
+                    </div>
+                </form>
+                
+                <hr class="my-4">
+                
+                <p class="text-center mb-0">
+                    Déjà un compte ? 
+                    <a href="{{ url_for('auth.login') }}" class="text-primary fw-bold">
+                        Connectez-vous
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Toggle class level field based on role
+    document.querySelectorAll('input[name="role"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            const classLevelGroup = document.getElementById('class-level-group');
+            if (this.value === 'teacher') {
+                classLevelGroup.style.display = 'none';
+            } else {
+                classLevelGroup.style.display = 'block';
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

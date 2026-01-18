@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Assistant{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h2 class="mb-4">
+                <i class="fas fa-robot me-2"></i>Assistant EduBurundi
+            </h2>
+            
+            <p class="text-muted mb-4">
+                L'assistant EduBurundi est là pour vous aider à naviguer sur la plateforme, 
+                trouver des exercices et répondre à vos questions.
+            </p>
+            
+            <!-- Chat Interface -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-comments me-2"></i>Discussion avec l'assistant
+                </div>
+                <div class="card-body chatbot-messages" id="main-chatbot-messages" style="height: 400px;">
+                    <div class="message bot-message">
+                        <div class="message-content">
+                            Bonjour {{ current_user.first_name or current_user.username }} ! 
+                            Je suis l'assistant EduBurundi. Comment puis-je vous aider aujourd'hui ?
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <form id="main-chatbot-form" class="d-flex">
+                        <input type="text" id="main-chatbot-input" class="form-control me-2" 
+                               placeholder="Posez votre question...">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Quick Questions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Questions rapides
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-outline-primary quick-question" data-question="Comment trouver des exercices ?">
+                            Trouver des exercices
+                        </button>
+                        <button class="btn btn-outline-primary quick-question" data-question="Comment utiliser le forum ?">
+                            Utiliser le forum
+                        </button>
+                        <button class="btn btn-outline-primary quick-question" data-question="Comment télécharger un exercice ?">
+                            Télécharger un exercice
+                        </button>
+                        <button class="btn btn-outline-primary quick-question" data-question="Comment poser une question sur un exercice ?">
+                            Poser une question
+                        </button>
+                        <button class="btn btn-outline-primary quick-question" data-question="aide">
+                            Aide générale
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- FAQ -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Questions fréquentes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="faqAccordion">
+                        {% for faq in faqs[:5] %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#faq{{ loop.index }}">
+                                    {{ faq.question }}
+                                </button>
+                            </h2>
+                            <div id="faq{{ loop.index }}" class="accordion-collapse collapse" 
+                                 data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    {{ faq.answer }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Help Topics -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-book me-2"></i>Sujets d'aide
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <a href="#" class="text-decoration-none quick-question" data-question="Comment naviguer sur le site ?">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>Navigation
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-decoration-none quick-question" data-question="Comment fonctionne mon compte ?">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>Mon compte
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-decoration-none quick-question" data-question="Comment trouver des exercices ?">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>Exercices
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-decoration-none quick-question" data-question="Comment utiliser le forum ?">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>Forum
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-decoration-none quick-question" data-question="Comment accéder aux corrigés ?">
+                                <i class="fas fa-chevron-right text-primary me-2"></i>Corrigés
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('main-chatbot-form');
+    const input = document.getElementById('main-chatbot-input');
+    const messages = document.getElementById('main-chatbot-messages');
+    
+    // Handle form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        sendMessage(input.value);
+    });
+    
+    // Handle quick questions
+    document.querySelectorAll('.quick-question').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const question = this.dataset.question;
+            sendMessage(question);
+        });
+    });
+    
+    function sendMessage(message) {
+        if (!message.trim()) return;
+        
+        // Add user message
+        addMessage(message, 'user');
+        input.value = '';
+        
+        // Add typing indicator
+        const typing = addTyping();
+        
+        // Send to server
+        fetch('/chatbot/ask', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+            typing.remove();
+            addMessage(data.response, 'bot');
+        })
+        .catch(error => {
+            typing.remove();
+            addMessage('Désolé, une erreur s\'est produite. Veuillez réessayer.', 'bot');
+        });
+    }
+    
+    function addMessage(text, sender) {
+        const div = document.createElement('div');
+        div.className = `message ${sender}-message`;
+        div.innerHTML = `<div class="message-content">${text.replace(/\n/g, '<br>')}</div>`;
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+    }
+    
+    function addTyping() {
+        const div = document.createElement('div');
+        div.className = 'message bot-message';
+        div.innerHTML = '<div class="message-content"><i class="fas fa-spinner fa-spin"></i> En train d\'écrire...</div>';
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return div;
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

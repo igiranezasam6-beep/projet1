@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord Enseignant{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <h2>
+            <i class="fas fa-chalkboard-teacher me-2"></i>
+            Bienvenue, {{ current_user.get_full_name() }}
+        </h2>
+        <p class="mb-0 opacity-75">Gérez vos exercices et suivez vos statistiques</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Stats Cards -->
+    <div class="row dashboard-stats g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-icon text-primary">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-value">{{ total_exercises }}</div>
+                    <div class="stat-label">Exercices publiés</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-icon text-success">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="stat-value">{{ total_views }}</div>
+                    <div class="stat-label">Vues totales</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="stat-icon text-info">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="stat-value">{{ total_downloads }}</div>
+                    <div class="stat-label">Téléchargements</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Actions -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ url_for('teacher.new_exercise') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Nouvel exercice
+                        </a>
+                        <a href="{{ url_for('teacher.questions') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-question-circle me-2"></i>Questions des élèves
+                        </a>
+                        <a href="{{ url_for('teacher.statistics') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-chart-bar me-2"></i>Statistiques
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Exercises List -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Mes exercices
+                    </h5>
+                    <span class="badge bg-primary">{{ exercises|length }} exercice(s)</span>
+                </div>
+                <div class="card-body">
+                    {% if exercises %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Titre</th>
+                                        <th>Matière</th>
+                                        <th>Niveau</th>
+                                        <th>Vues</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for exercise in exercises %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ exercise.title }}</strong>
+                                            {% if exercise.has_correction %}
+                                                <span class="badge bg-success ms-1">
+                                                    <i class="fas fa-check"></i>
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ exercise.get_subject_name() }}</td>
+                                        <td>{{ exercise.get_level_name() }}</td>
+                                        <td>
+                                            <i class="fas fa-eye text-muted me-1"></i>{{ exercise.view_count }}
+                                        </td>
+                                        <td>
+                                            {% if exercise.is_published %}
+                                                <span class="badge bg-success">Publié</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Brouillon</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('teacher.edit_exercise', id=exercise.id) }}" 
+                                                   class="btn btn-outline-primary" title="Modifier">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ url_for('teacher.delete_exercise', id=exercise.id) }}" 
+                                                      method="POST" class="d-inline"
+                                                      onsubmit="return confirm('Supprimer cet exercice ?');">
+                                                    <button type="submit" class="btn btn-outline-danger" title="Supprimer">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <h5>Aucun exercice</h5>
+                            <p class="text-muted">Vous n'avez pas encore créé d'exercice.</p>
+                            <a href="{{ url_for('teacher.new_exercise') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Créer mon premier exercice
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Recent Questions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Questions récentes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_questions %}
+                        {% for question in recent_questions %}
+                            <div class="mb-3 pb-3 border-bottom">
+                                <small class="text-muted d-block mb-1">
+                                    {{ question.author.get_full_name() }} - 
+                                    {{ question.created_at.strftime('%d/%m/%Y') }}
+                                </small>
+                                <p class="mb-1">{{ question.content[:100] }}...</p>
+                                <small class="text-muted">
+                                    Sur: {{ question.exercise.title }}
+                                </small>
+                                {% if not question.is_resolved %}
+                                    <span class="badge bg-warning ms-1">En attente</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <a href="{{ url_for('teacher.questions') }}" class="btn btn-outline-primary btn-sm w-100">
+                            Voir toutes les questions
+                        </a>
+                    {% else %}
+                        <p class="text-muted text-center mb-0">
+                            Aucune question récente
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Quick Tips -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Conseils
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Ajoutez des corrigés pour aider les élèves
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Incluez des vidéos explicatives
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Répondez aux questions des élèves
+                        </li>
+                        <li>
+                            <i class="fas fa-check text-success me-2"></i>
+                            Variez les niveaux de difficulté
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
