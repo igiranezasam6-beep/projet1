@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduBurundi - Plateforme d'exercices interactifs</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark">EB</span>
+        <div>
+          <div class="brand-name" data-i18n="brandName">EduBurundi</div>
+          <div class="brand-tagline" data-i18n="brandTagline">
+            Plateforme d'exercices interactifs
+          </div>
+        </div>
+      </div>
+      <nav class="site-nav">
+        <a href="#teacher-space" data-i18n="navTeacher">Espace enseignants</a>
+        <a href="#student-space" data-i18n="navStudent">Espace eleves</a>
+        <a href="#chatbot-space" data-i18n="navChatbot">Chatbot</a>
+        <a href="#forum-space" data-i18n="navForum">Forum</a>
+      </nav>
+      <div class="lang-switcher">
+        <label for="languageSelect" data-i18n="langLabel">Langue</label>
+        <select id="languageSelect">
+          <option value="fr">FR</option>
+          <option value="en">EN</option>
+          <option value="rn">RN</option>
+        </select>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <h1 data-i18n="heroTitle">
+            Apprendre, reviser et progresser partout au Burundi
+          </h1>
+          <p data-i18n="heroSubtitle">
+            EduBurundi rassemble exercices, corriges, videos et entraide pour
+            les eleves du post-fondamental.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-btn" href="#student-space" data-i18n="heroCta">
+              Explorer les exercices
+            </a>
+            <a class="ghost-btn" href="#teacher-space" data-i18n="heroCtaAlt">
+              Publier un exercice
+            </a>
+          </div>
+        </div>
+        <div class="hero-card">
+          <h2 data-i18n="heroCardTitle">En bref</h2>
+          <ul>
+            <li data-i18n="heroCardPoint1">Contenus par matiere et niveau</li>
+            <li data-i18n="heroCardPoint2">Questions et discussions faciles</li>
+            <li data-i18n="heroCardPoint3">Chatbot d'assistance integre</li>
+            <li data-i18n="heroCardPoint4">Multilingue FR/EN/RN</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="feature-grid">
+        <article class="feature-card">
+          <h3 data-i18n="featureTeacherTitle">Espace enseignants</h3>
+          <p data-i18n="featureTeacherDesc">
+            Publiez des exercices classes par matiere, niveau et theme, avec
+            corriges et liens video.
+          </p>
+        </article>
+        <article class="feature-card">
+          <h3 data-i18n="featureStudentTitle">Espace eleves</h3>
+          <p data-i18n="featureStudentDesc">
+            Trouvez rapidement les ressources utiles pour reviser et poser des
+            questions.
+          </p>
+        </article>
+        <article class="feature-card">
+          <h3 data-i18n="featureChatbotTitle">Chatbot d'assistance</h3>
+          <p data-i18n="featureChatbotDesc">
+            Obtenez de l'aide pour naviguer, comprendre et acceder aux contenus.
+          </p>
+        </article>
+        <article class="feature-card">
+          <h3 data-i18n="featureForumTitle">Forum d'entraide</h3>
+          <p data-i18n="featureForumDesc">
+            Discutez par matiere ou niveau avec moderation legere.
+          </p>
+        </article>
+      </section>
+
+      <section id="teacher-space" class="panel">
+        <div class="panel-header">
+          <h2 data-i18n="teacherTitle">Espace enseignants</h2>
+          <p data-i18n="teacherSubtitle">
+            Televersez des exercices, ajoutez des corriges et suivez l'interet.
+          </p>
+        </div>
+        <form id="teacherForm" class="form-grid">
+          <div class="form-field">
+            <label for="teacherName" data-i18n="teacherNameLabel">
+              Nom de l'enseignant
+            </label>
+            <input id="teacherName" type="text" required data-i18n-placeholder="teacherNamePlaceholder" />
+          </div>
+          <div class="form-field">
+            <label for="teacherSubject" data-i18n="teacherSubjectLabel">
+              Matiere
+            </label>
+            <input id="teacherSubject" type="text" required data-i18n-placeholder="teacherSubjectPlaceholder" />
+          </div>
+          <div class="form-field">
+            <label for="teacherLevel" data-i18n="teacherLevelLabel">
+              Niveau
+            </label>
+            <input id="teacherLevel" type="text" required data-i18n-placeholder="teacherLevelPlaceholder" />
+          </div>
+          <div class="form-field">
+            <label for="teacherTheme" data-i18n="teacherThemeLabel">
+              Theme
+            </label>
+            <input id="teacherTheme" type="text" required data-i18n-placeholder="teacherThemePlaceholder" />
+          </div>
+          <div class="form-field full">
+            <label for="teacherTitle" data-i18n="teacherTitleLabel">
+              Titre de l'exercice
+            </label>
+            <input id="teacherTitle" type="text" required data-i18n-placeholder="teacherTitlePlaceholder" />
+          </div>
+          <div class="form-field full">
+            <label for="teacherStatement" data-i18n="teacherStatementLabel">
+              Enonce
+            </label>
+            <textarea id="teacherStatement" rows="4" required data-i18n-placeholder="teacherStatementPlaceholder"></textarea>
+          </div>
+          <div class="form-field full">
+            <label for="teacherSolution" data-i18n="teacherSolutionLabel">
+              Corrige (optionnel)
+            </label>
+            <textarea id="teacherSolution" rows="3" data-i18n-placeholder="teacherSolutionPlaceholder"></textarea>
+          </div>
+          <div class="form-field full">
+            <label for="teacherVideo" data-i18n="teacherVideoLabel">
+              Lien video (optionnel)
+            </label>
+            <input id="teacherVideo" type="url" data-i18n-placeholder="teacherVideoPlaceholder" />
+          </div>
+          <div class="form-actions">
+            <button class="primary-btn" type="submit" data-i18n="teacherSubmit">
+              Publier l'exercice
+            </button>
+            <span id="teacherStatus" class="status-text"></span>
+          </div>
+        </form>
+
+        <div class="panel-list">
+          <h3 data-i18n="teacherPublishedTitle">Exercices publies</h3>
+          <div id="teacherExercises" class="stack-list"></div>
+        </div>
+      </section>
+
+      <section id="student-space" class="panel">
+        <div class="panel-header">
+          <h2 data-i18n="studentTitle">Espace eleves</h2>
+          <p data-i18n="studentSubtitle">
+            Recherchez des ressources par matiere, niveau ou theme et posez vos
+            questions.
+          </p>
+        </div>
+
+        <div class="filters">
+          <div class="form-field">
+            <label for="filterSubject" data-i18n="filterSubjectLabel">
+              Matiere
+            </label>
+            <select id="filterSubject"></select>
+          </div>
+          <div class="form-field">
+            <label for="filterLevel" data-i18n="filterLevelLabel">Niveau</label>
+            <select id="filterLevel"></select>
+          </div>
+          <div class="form-field">
+            <label for="filterTheme" data-i18n="filterThemeLabel">Theme</label>
+            <select id="filterTheme"></select>
+          </div>
+          <div class="form-field">
+            <label for="filterSearch" data-i18n="filterSearchLabel">
+              Recherche
+            </label>
+            <input id="filterSearch" type="text" data-i18n-placeholder="filterSearchPlaceholder" />
+          </div>
+        </div>
+
+        <div id="exerciseList" class="card-grid"></div>
+      </section>
+
+      <section id="chatbot-space" class="panel">
+        <div class="panel-header">
+          <h2 data-i18n="chatbotTitle">Chatbot d'assistance</h2>
+          <p data-i18n="chatbotSubtitle">
+            Posez vos questions pratiques et recevez des conseils adaptes a
+            votre niveau.
+          </p>
+        </div>
+        <div class="chatbot">
+          <div id="chatbotMessages" class="chatbot-messages"></div>
+          <form id="chatbotForm" class="chatbot-form">
+            <input id="chatbotInput" type="text" data-i18n-placeholder="chatbotPlaceholder" required />
+            <button class="primary-btn" type="submit" data-i18n="chatbotSend">
+              Envoyer
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <section id="forum-space" class="panel">
+        <div class="panel-header">
+          <h2 data-i18n="forumTitle">Forum d'entraide</h2>
+          <p data-i18n="forumSubtitle">
+            Lancez des discussions par matiere ou niveau, avec moderation
+            legere.
+          </p>
+        </div>
+        <form id="forumForm" class="form-grid">
+          <div class="form-field">
+            <label for="forumName" data-i18n="forumNameLabel">
+              Nom ou pseudo
+            </label>
+            <input id="forumName" type="text" required data-i18n-placeholder="forumNamePlaceholder" />
+          </div>
+          <div class="form-field">
+            <label for="forumSubject" data-i18n="forumSubjectLabel">
+              Matiere
+            </label>
+            <input id="forumSubject" type="text" required data-i18n-placeholder="forumSubjectPlaceholder" />
+          </div>
+          <div class="form-field">
+            <label for="forumLevel" data-i18n="forumLevelLabel">Niveau</label>
+            <input id="forumLevel" type="text" required data-i18n-placeholder="forumLevelPlaceholder" />
+          </div>
+          <div class="form-field full">
+            <label for="forumMessage" data-i18n="forumMessageLabel">
+              Message d'ouverture
+            </label>
+            <textarea id="forumMessage" rows="3" required data-i18n-placeholder="forumMessagePlaceholder"></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="primary-btn" type="submit" data-i18n="forumSubmit">
+              Ouvrir la discussion
+            </button>
+          </div>
+        </form>
+
+        <div id="forumThreads" class="stack-list"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p data-i18n="footerText">
+        EduBurundi - Soutenir les revisions et l'acces aux ressources educatives
+        pour tous.
+      </p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
