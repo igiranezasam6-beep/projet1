@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ topic.title }} · Forum · EduBurundi{% endblock %}
+
+{% block content %}
+  <div class="bg-white border rounded-3 p-4 mb-3">
+    <div class="small text-secondary">
+      {{ topic.subject }}{% if topic.school_level %} · {{ topic.school_level }}{% endif %}
+      · Créé le {{ topic.created_at|date:"d/m/Y H:i" }}
+    </div>
+    <h1 class="h4 fw-semibold mt-1 mb-0">{{ topic.title }}</h1>
+  </div>
+
+  <div class="bg-white border rounded-3 p-3 mb-3">
+    {% if user.is_authenticated %}
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ post_form.non_field_errors }}
+        <div class="mb-2">
+          <label class="form-label" for="{{ post_form.content.id_for_label }}">Répondre</label>
+          {{ post_form.content }}
+          <div class="text-danger small">{{ post_form.content.errors }}</div>
+        </div>
+        <button class="btn btn-primary" type="submit">Publier</button>
+      </form>
+    {% else %}
+      <div class="alert alert-info mb-0">
+        <a href="{% url 'login' %}">Connectez-vous</a> pour répondre.
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="list-group">
+    {% for p in topic.posts.all %}
+      <div class="list-group-item">
+        <div class="small text-secondary">
+          {% if p.author %}{{ p.author.username }}{% else %}Utilisateur supprimé{% endif %}
+          · {{ p.created_at|date:"d/m/Y H:i" }}
+        </div>
+        <div class="mt-1">{{ p.content }}</div>
+      </div>
+    {% empty %}
+      <div class="alert alert-light border mb-0">Aucune réponse pour le moment.</div>
+    {% endfor %}
+  </div>
+{% endblock %}
+

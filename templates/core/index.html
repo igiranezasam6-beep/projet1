@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="jumbotron p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Bienvenue sur EduBurundi</h1>
+        <p class="col-md-8 fs-4">La plateforme d’exercices interactifs pour les élèves du post-fondamental au Burundi.</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'register' %}" role="button">Rejoindre maintenant</a>
+    </div>
+</div>
+
+<div class="row align-items-md-stretch">
+    <div class="col-md-4">
+        <div class="h-100 p-5 text-white bg-success rounded-3">
+            <h2>Espace Élèves</h2>
+            <p>Accédez à des centaines d'exercices, corrigés et vidéos pour réviser efficacement.</p>
+            <a href="{% url 'resource_list' %}" class="btn btn-outline-light" type="button">Voir les ressources</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="h-100 p-5 bg-light border rounded-3">
+            <h2>Espace Enseignants</h2>
+            <p>Partagez vos exercices et aidez les élèves à réussir. Suivez les statistiques de consultation.</p>
+            <a href="{% url 'upload_resource' %}" class="btn btn-outline-secondary" type="button">Ajouter un exercice</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="h-100 p-5 text-white bg-info rounded-3">
+            <h2>Chatbot Assistant</h2>
+            <p>Besoin d'aide ? Notre assistant virtuel est là pour vous guider.</p>
+            <a href="{% url 'chatbot' %}" class="btn btn-outline-light" type="button">Discuter</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
