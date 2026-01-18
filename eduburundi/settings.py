@@ -21,11 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-=rf*^-ikfu8#^^@5d(@c4r7yych_%$nufq1s(l70gk^vdfaiu='
+SECRET_KEY = 'django-insecure-q$z$!*!5@=!2a74-3p@k@knjtpb9&3n_i!4e1mhi9-+32huss5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -38,6 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'learning',
+    'core',
+    'accounts',
+    'resources',
+    'forum',
+    'chatbot',
 ]
 
 MIDDLEWARE = [
@@ -133,3 +140,10 @@ LANGUAGES = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+AUTH_USER_MODEL = 'accounts.User'
+
