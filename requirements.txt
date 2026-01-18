@@ -1,0 +1,2 @@
+Django>=5.0
+Pillow  # For image handling if needed
